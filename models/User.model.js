@@ -10,14 +10,13 @@ const UserSchema = new Schema({
     lowercase: true,
   },
   passwordHash: { type: String, required: true },
-  role: {
-    type: String,
-    enum: ["ADMIN", "USER"],
-    required: true,
-    default: "USER",
-  },
+  age: { type: Number, min: 16, max: 80, required: true },
+  userTeams: [{ type: mongoose.Schema.Types.ObjectId, ref: "Teams" }]
 });
 
 const UserModel = model("User", UserSchema);
 
 module.exports = UserModel;
+
+// userComments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comments" }],
+
