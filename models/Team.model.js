@@ -6,7 +6,8 @@ const TeamSchema = new Schema({
     type: String,
     required: true,
     enum: [
-      "São Paulo/SP, Rio de Janeiro/RJ",
+      "São Paulo/SP",
+      "Rio de Janeiro/RJ",
       "Porto Alegre/RS",
       "Florianópolis/SC",
       "Vitória/ES",
