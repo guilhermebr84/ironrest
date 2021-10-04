@@ -1,91 +1,101 @@
+const { ObjectId } = require("mongoose").Types;
 const router = require("express").Router();
-const TeamModel = require("../models/Team.model");
 
-const bcrypt = require("bcryptjs");
-
-const generateToken = require("../config/jwt.config");
 const isAuthenticated = require("../middlewares/isAuthenticated");
 const attachCurrentUser = require("../middlewares/attachCurrentUser");
 
-const {ObjectId} = require('mongoose').Schema.Types
+const TeamModel = require("../models/Team.model");
+const MatchModel = require("../models/Match.model");
+const UserModel = require("../models/User.model");
+// const express = require("express");
+
+// const isAdmin = require("../middlewares/isAdmin");
 
 //CRUD
 // CREATE
-router.post("/team", async (req, res) => {
-  console.log(req.body);
-  try {
-    TeamModel.create(...req.body);
-    return res.status(201).json(result);
-  } catch (err) {
-    console.error;
-    return res.status(500).json({ msg: JSON.stringify(err) });
-  }
-});
-
-// READ - Lista
-
-router.get(
+router.post(
   "/team",
-  async(req, (res) => {
+  isAuthenticated,
+  attachCurrentUser,
+  async (req, res, next) => {
     try {
-      TeamModel.find();
-      return res.status(200).json(result);
+      const result = await TeamModel.create({
+        ...req.body,
+        userOwnerId: req.currentUser._id,
+      });
+
+      return res.status(201).json(result);
     } catch (err) {
-      return res.status(500).json({ msg: " " });
+      return res.status(500).json({ msg: "Create error" });
     }
-  })
+  }
 );
 
-// READ - Detalhes
-router.get("/team/:id", (req, res) => {
-  try {
-    if (!result) {
-      return res.status(404).json({ msg: "not found, try again." });
+//READ
+router.get(
+  "/team",
+  isAuthenticated,
+  attachCurrentUser,
+  async (req, res, next) => {
+    try {
+      const result = await TeamModel.find({ userOwnerId: req.currentUser._id });
+      if (!result) {
+        return res.status(404).json({ msg: "Team not found" });
+      }
+      return res.status(200).json(result);
+    } catch (err) {
+      return res.status(500).json({ msg: "List error" });
     }
-    TeamModel.findOne({ _id: req.params.id });
+  }
+);
+
+// READ by ID
+router.get("/team/:id", isAuthenticated, async (req, res, next) => {
+  try {
+    const result = await TeamModel.findOne({ _id: req.params.id }).populate(
+      "usersId"
+    );
+    if (!result) {
+      return res.status(404).json({ msg: "Team not found" });
+    }
     return res.status(200).json(result);
   } catch (err) {
-    return res
-      .status(500)
-      .json({ msg: "fail to find teams, server internal error."});
+    return res.status(500).json({ msg: "List ID error" });
   }
 });
 
-// UPDATE
+// pesquisar por nome
 
-router.patch("/team/id", (req, res, next) => {
+// UPDATE by ID
+router.patch("/team/edit/:id", isAuthenticated, async (req, res, next) => {
   try {
     const result = await TeamModel.findOneAndUpdate(
-      { _id: Object(req.params.id) },
+      { _id: req.params.id },
       { $set: { ...req.body } },
-      { new: true },
-      { runValidators: true }
+      { new: true, runValidators: true }
     );
-
-    if(!result){
-      return res.status(404).json({ msg: "not found, try again."})
+    if (!result) {
+      return res.status(404).json({ msg: "Team not found" });
     }
-    return res.status(200).json(result)
+    return res.status(200).json(result);
   } catch (err) {
-    return res
-      .status(500)
-      .json({ msg: "fail to update team, server internal error."});
+    return res.status(500).json({ msg: "Edit ID error" });
   }
 });
 
-//DELETE
-router.delete('/team/:id', (req, res) => {
-  TeamModel.deleteOne({_id: Object(req.params.id)});
+//DELETE by ID
+router.delete("/team/delete/:id", isAuthenticated, async (req, res, next) => {
   try {
-    if (result.deletedCount < 1 ) {
-      return res.status(404).json({ msg: "not found, try again." });
-    }  
-  return res.status(200).json({}); 
-} catch (err) {
-  return res
-  .status(500)
-  .json({ msg: "fail to update team, server internal error."});
-}
-})
+    const result = await TeamModel.deleteOne({ _id: ObjectId(req.params.id) });
+    if (result.deletedCount < 1) {
+      return res.status(404).json({ msg: "Team not found" });
+    }
+    await UserModel.deleteMany({ userId: ObjectId(req.params.id) });
+
+    return res.status(200).json({});
+  } catch (err) {
+    return res.status(500).json({ msg: "Delete ID error" });
+  }
+});
 
 module.exports = router;

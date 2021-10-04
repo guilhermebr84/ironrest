@@ -4,7 +4,6 @@ const TeamSchema = new Schema({
   name: { type: String, required: true, trim: true },
   city: {
     type: String,
-    required: true,
     enum: [
       "São Paulo/SP",
       "Rio de Janeiro/RJ",
@@ -15,12 +14,11 @@ const TeamSchema = new Schema({
       "outros",
     ],
   },
-  players: [
-    { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  ],
+  userOwnerId: { type: Types.ObjectId, ref: "User" },
+  players: [{ type: Types.ObjectId, ref: "User" }],
   capitain: { type: String },
 });
 
-const TeamModel = model("Team", UserSchema);
+const TeamModel = model("Team", TeamSchema);
 
 module.exports = TeamModel;
