@@ -10,11 +10,10 @@ const UserSchema = new Schema({
     lowercase: true,
   },
   passwordHash: { type: String, required: true },
-  age: { type: Number, min: 16, max: 80, required: true },
+  age: { type: Number, min: 16, max: 80},
   position: {
     type: String,
-    enum: ["ATTACK", "MIDFIELDER", "DEFENSE", "GOALKEEPER"],
-    required: true,
+    enum: ["ATTACK", "MIDFIELDER", "DEFENSE", "GOALKEEPER"]
   },
   
 });
