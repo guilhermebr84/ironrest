@@ -116,4 +116,17 @@ router.get("/profile", isAuthenticated, attachCurrentUser, (req, res) => {
   }
 });
 
+//read de todos os jogadores cadastrados
+router.get("/playerslist", isAuthenticated, attachCurrentUser, async (req, res) => {
+  
+  try {
+    const allusers = await UserModel.find();
+    return res.status(200).json(allusers);
+    } 
+    catch (err) {
+    console.error(err);
+    return res.status(500).json({ msg: JSON.stringify(err) });
+  }
+});
+
 module.exports = router;
