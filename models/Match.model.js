@@ -23,6 +23,7 @@ const MatchSchema = new Schema({
     enum: ["INDOOR 5x5", "OUTDOOR 7x7", "PROFESSIONAL 11x11"],
   },
   comments: { type: String, maxlength: 255 },
+  userOwnerId: {type: Types.ObjectId, ref: "User"},
 });
 
 const MatchModel = model("Match", MatchSchema);

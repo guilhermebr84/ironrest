@@ -14,7 +14,7 @@ const UserModel = require("../models/User.model");
 //CRUD
 // CREATE
 router.post(
-  "/match",
+  "/matches",
   isAuthenticated,
   attachCurrentUser,
   async (req, res, next) => {
@@ -34,7 +34,7 @@ router.post(
 
 //READ
 router.get(
-  "/match",
+  "/matches", 
   isAuthenticated,
   attachCurrentUser,
   async (req, res, next) => {
@@ -53,7 +53,7 @@ router.get(
 );
 
 // READ by ID
-router.get("/match/:id", isAuthenticated, async (req, res, next) => {
+router.get("/matches/:id", isAuthenticated, async (req, res, next) => {
   try {
     const result = await MatchModel.findOne({ _id: req.params.id }).populate(
       "usersId"
@@ -68,7 +68,7 @@ router.get("/match/:id", isAuthenticated, async (req, res, next) => {
 });
 
 // UPDATE by ID
-router.patch("/match/edit/:id", isAuthenticated, async (req, res, next) => {
+router.patch("/matches/edit/:id", isAuthenticated, async (req, res, next) => {
   try {
     const result = await MatchModel.findOneAndUpdate(
       { _id: req.params.id },
@@ -85,7 +85,7 @@ router.patch("/match/edit/:id", isAuthenticated, async (req, res, next) => {
 });
 
 // DELETE by ID
-router.delete("/match/delete/:id", isAuthenticated, async (req, res, next) => {
+router.delete("/matches/delete/:id", isAuthenticated, async (req, res, next) => {
   try {
     const result = await MatchModel.deleteOne({ _id: ObjectId(req.params.id) });
     if (result.deletedCount < 1) {

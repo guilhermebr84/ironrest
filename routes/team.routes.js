@@ -26,19 +26,39 @@ router.post(
 
       return res.status(201).json(result);
     } catch (err) {
+      console.log(err);
       return res.status(500).json({ msg: "Create error" });
     }
   }
 );
 
-//READ
+// userOwnerId: req.currentUser._id
+//READ 1
 router.get(
   "/team",
   isAuthenticated,
   attachCurrentUser,
   async (req, res, next) => {
     try {
-      const result = await TeamModel.find({ userOwnerId: req.currentUser._id });
+      const result = await TeamModel.find({userOwnerId: req.currentUser._id});
+      if (!result) {
+        return res.status(404).json({ msg: "Team not found" });
+      }
+      return res.status(200).json(result);
+    } catch (err) {
+      return res.status(500).json({ msg: "List error" });
+    }
+  }
+);
+
+//READ all
+router.get(
+  "/team/all",
+  isAuthenticated,
+  attachCurrentUser,
+  async (req, res, next) => {
+    try {
+      const result = await TeamModel.find();
       if (!result) {
         return res.status(404).json({ msg: "Team not found" });
       }
