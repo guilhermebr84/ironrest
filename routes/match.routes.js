@@ -26,7 +26,7 @@ router.post(
 
       return res.status(201).json(result);
     } catch (err) {
-      console.error(err)
+      console.error(err);
       return res.status(500).json({ msg: "Create error" });
     }
   }
@@ -34,7 +34,7 @@ router.post(
 
 //READ
 router.get(
-  "/matches", 
+  "/matches",
   isAuthenticated,
   attachCurrentUser,
   async (req, res, next) => {
@@ -85,18 +85,24 @@ router.patch("/matches/edit/:id", isAuthenticated, async (req, res, next) => {
 });
 
 // DELETE by ID
-router.delete("/matches/delete/:id", isAuthenticated, async (req, res, next) => {
-  try {
-    const result = await MatchModel.deleteOne({ _id: ObjectId(req.params.id) });
-    if (result.deletedCount < 1) {
-      return res.status(404).json({ msg: "Match not found" });
-    }
-    await UserModel.deleteMany({ userId: ObjectId(req.params.id) });
+router.delete(
+  "/matches/delete/:id",
+  isAuthenticated,
+  async (req, res, next) => {
+    try {
+      const result = await MatchModel.deleteOne({
+        _id: ObjectId(req.params.id),
+      });
+      if (result.deletedCount < 1) {
+        return res.status(404).json({ msg: "Match not found" });
+      }
+      await UserModel.deleteMany({ userId: ObjectId(req.params.id) });
 
-    return res.status(200).json({});
-  } catch (err) {
-    return res.status(500).json({ msg: "Delete ID error" });
+      return res.status(200).json({});
+    } catch (err) {
+      return res.status(500).json({ msg: "Delete ID error" });
+    }
   }
-});
+);
 
 module.exports = router;
